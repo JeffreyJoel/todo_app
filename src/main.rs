@@ -25,11 +25,19 @@ impl TodoList {
             completed: false,
         };
         self.list.push(new_todo);
+        print!("Todo added!")
     }
     fn return_todos(&self) {
         if self.list.len() > 0 {
             for todo in &self.list {
-                println!("{}: {},{},{}", todo.id, todo.title, todo.description, todo.completed)
+                println!(
+                    "  Id {id}:\n  Title: {title}\n  Description: {description}\n  Completed: {completed}",
+                    id = todo.id,
+                    title = todo.title.replace('\n', "\n  "),
+                    description = todo.description.replace('\n', "\n  "),
+                    completed = todo.completed
+                );
+                
             }
         } else {
             print!("You have not added any todos")
@@ -43,12 +51,19 @@ impl TodoList {
             }
         }
     }
+    fn delete_todo(&mut self, id: u32) {
+        if let Some(index) = self.list.iter().position(|x| x.id == id) {
+            self.list.remove(index);
+        } else {
+            println!("Todo not found");
+        }
+    }
 }
 
 fn main() {
     let mut todo_list = TodoList::new_todo();
     loop {
-        println!("Enter 1 to add a new todo, Enter 2 to view all todos, Enter 3 to mark a todo as complete and Enter 4 to exit this appliction");
+        println!(" Enter 1 to add a new todo,\n Enter 2 to view all todos,\n Enter 3 to mark a todo as complete,\n Enter 4 to delete a todo, \n and Enter 5 to exit this appliction");
         let mut choice = String::new();
         io::stdin()
             .read_line(&mut choice)
@@ -90,6 +105,18 @@ fn main() {
                 todo_list.update_todo(id);
             }
             4 => {
+                println!("Enter the id of the Todo you want to delete");
+                let mut id = String::new();
+                io::stdin().read_line(&mut id).expect("Could not read line");
+
+                let id: u32 = match id.trim().parse() {
+                    Ok(num) => num,
+                    Err(_) => continue,
+                };
+
+                todo_list.delete_todo(id);
+            },
+            5 =>{
                 break;
             }
             _ => {
@@ -98,4 +125,3 @@ fn main() {
         }
     }
 }
-
